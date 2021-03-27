@@ -6,7 +6,7 @@
 */
 #include <arduino.h>
 
-#define MAX30105_ADDRESS 0x57 
+#define MAX30102_ADDRESS 0x57
 
 //register addresses
 #define REG_INTR_STATUS_1 0x00
@@ -34,37 +34,39 @@
 
 #define STORAGE_SIZE 3 // buffer size in samples
 
-class MAX30102{
- public: 
-    MAX30102(void);
-  
-    boolean begin(uint8_t i2caddr = MAX30105_ADDRESS);  
-    
-    // Setup the IC with 
-    // powerLevel = 0x1F,  sampleAverage = 4,  Mode = Red and IR,  
-    // sampleRate = 100,  pulseWidth = 411,  adcRange = 4096  
-    void setup();
-    void off() {writeRegister8(REG_MODE_CONFIG,0x80);}
-    
-    //FIFO Reading
-    uint16_t check(void);     //Checks for new data and fills FIFO
-    uint8_t  available(void); //returns number of samples  available (head - tail)
-    void     nextSample(void);//Advances the tail of the sense array
-    uint32_t getRed(void);    //Returns the FIFO sample pointed to by tail
-    uint32_t getIR(void);     //Returns the FIFO sample pointed to by tail
-  
-    // Low-level I2C communication
-    uint8_t  readRegister8(uint8_t reg);
-    uint32_t readFIFOSample(void);
-    void     writeRegister8(uint8_t reg, uint8_t value);
- 
- private:
-    uint8_t _i2caddr;
-    struct {
+class MAX30102
+{
+public:
+   MAX30102(void);
+
+   boolean begin(TwoWire &i2c, uint8_t i2caddr = MAX30102_ADDRESS);
+
+   // Setup the IC with
+   // powerLevel = 0x1F,  sampleAverage = 4,  Mode = Red and IR,
+   // sampleRate = 100,  pulseWidth = 411,  adcRange = 4096
+   void setup();
+   void off() { writeRegister8(REG_MODE_CONFIG, 0x80); }
+
+   //FIFO Reading
+   uint16_t check(void);    //Checks for new data and fills FIFO
+   uint8_t available(void); //returns number of samples  available (head - tail)
+   void nextSample(void);   //Advances the tail of the sense array
+   uint32_t getRed(void);   //Returns the FIFO sample pointed to by tail
+   uint32_t getIR(void);    //Returns the FIFO sample pointed to by tail
+
+   // Low-level I2C communication
+   uint8_t readRegister8(uint8_t reg);
+   uint32_t readFIFOSample(void);
+   void writeRegister8(uint8_t reg, uint8_t value);
+
+private:
+   TwoWire *i2cBus = NULL;
+   uint8_t _i2caddr;
+   struct
+   {
       uint32_t red[STORAGE_SIZE];
       uint32_t IR[STORAGE_SIZE];
       byte head;
       byte tail;
-    } sense; //Circular buffer of readings from the sensor
-
+   } sense; //Circular buffer of readings from the sensor
 };
