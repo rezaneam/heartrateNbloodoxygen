@@ -27,19 +27,25 @@ boolean MAX30102::begin(TwoWire &i2c, uint8_t i2caddr)
   return true;
 }
 
+uint8_t MAX30102::getInterruptStatue()
+{
+  return readRegister8(REG_INTR_STATUS_1) | readRegister8(REG_INTR_STATUS_2);
+}
+
 void MAX30102::setup()
 {
   writeRegister8(REG_MODE_CONFIG, 0x40); //reset
   delay(500);
-  writeRegister8(REG_FIFO_WR_PTR, 0x00); //FIFO_WR_PTR[4:0]
-  writeRegister8(REG_OVF_COUNTER, 0x00); //OVF_COUNTER[4:0]
-  writeRegister8(REG_FIFO_RD_PTR, 0x00); //FIFO_RD_PTR[4:0]
-  writeRegister8(REG_FIFO_CONFIG, 0x4f); //sample avg = 4, fifo rollover=false, fifo almost full = 17
-  writeRegister8(REG_MODE_CONFIG, 0x03); //0x02 for Red only, 0x03 for SpO2 mode 0x07 multimode LED
-  writeRegister8(REG_SPO2_CONFIG, 0x27); // SPO2_ADC=4096nA, SPO2 sample rate(100Hz), pulseWidth (411uS)
-  writeRegister8(REG_LED1_PA, 0x17);     //Choose value for ~ 6mA for LED1 (IR)
-  writeRegister8(REG_LED2_PA, 0x17);     // Choose value for ~ 6mA for LED2 (Red)
-  writeRegister8(REG_PILOT_PA, 0x1F);    // Choose value for ~ 6mA for Pilot LED
+  writeRegister8(REG_FIFO_WR_PTR, 0x00);   //FIFO_WR_PTR[4:0]
+  writeRegister8(REG_OVF_COUNTER, 0x00);   //OVF_COUNTER[4:0]
+  writeRegister8(REG_FIFO_RD_PTR, 0x00);   //FIFO_RD_PTR[4:0]
+  writeRegister8(REG_FIFO_CONFIG, 0x4f);   //sample avg = 4, fifo rollover=false, fifo almost full = 17
+  writeRegister8(REG_MODE_CONFIG, 0x03);   //0x02 for Red only, 0x03 for SpO2 mode 0x07 multimode LED
+  writeRegister8(REG_SPO2_CONFIG, 0x27);   // SPO2_ADC=4096nA, SPO2 sample rate(100Hz), pulseWidth (411uS)
+  writeRegister8(REG_LED1_PA, 0x17);       //Choose value for ~ 6mA for LED1 (IR)
+  writeRegister8(REG_LED2_PA, 0x17);       // Choose value for ~ 6mA for LED2 (Red)
+  writeRegister8(REG_PILOT_PA, 0x1F);      // Choose value for ~ 6mA for Pilot LED
+  writeRegister8(REG_INTR_ENABLE_1, 0x40); // Enabling the Data Ready interrupt
 }
 
 //Tell caller how many samples are available

@@ -47,6 +47,8 @@ public:
    void setup();
    void off() { writeRegister8(REG_MODE_CONFIG, 0x80); }
 
+   uint8_t getInterruptStatue();
+
    //FIFO Reading
    uint16_t check(void);    //Checks for new data and fills FIFO
    uint8_t available(void); //returns number of samples  available (head - tail)
