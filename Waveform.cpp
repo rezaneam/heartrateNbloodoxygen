@@ -6,6 +6,11 @@ void Waveform::shift_left(uint8_t *a, uint8_t len, uint8_t newVal)
     a[len - 1] = newVal;
 }
 
+void Waveform::ResetMeasurment()
+{
+    std::fill(waveform, waveform + MAX_LEN, 0);
+}
+
 void Waveform::AddSample(int16_t value)
 {
     value = (value / 8) + 128;
